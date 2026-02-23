@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import socIndexHandler from './api/soc-index';
-import wagesHandler from './api/wages';
+// Removed static imports to prevent 'tsc' from compiling Vercel serverless functions during frontend build
 
 const apiMiddleware = () => ({
     name: 'api-middleware',
@@ -27,9 +26,13 @@ const apiMiddleware = () => ({
 
             try {
                 if (url.pathname === '/api/soc-index') {
-                    await socIndexHandler(req, res);
+                    const modulePath = './api/soc-index';
+                    const { default: handler } = await import(/* @vite-ignore */ modulePath + '.ts');
+                    await handler(req, res);
                 } else if (url.pathname === '/api/wages') {
-                    await wagesHandler(req, res);
+                    const modulePath = './api/wages';
+                    const { default: handler } = await import(/* @vite-ignore */ modulePath + '.ts');
+                    await handler(req, res);
                 } else {
                     res.status(404).json({ error: 'Not found' });
                 }
