@@ -1,5 +1,5 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { readCsvSync } from './_utils';
+import { readCsvSync } from './_utils.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     try {

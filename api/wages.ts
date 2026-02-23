@@ -1,5 +1,5 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { readCsvSync, streamWagesBySoc, loadFipsMapping } from './_utils';
+import { readCsvSync, streamWagesBySoc, loadFipsMapping } from './_utils.js';
 
 // Global cache across warm Vercel invocations
 let globalSocIndex: any[] | null = null;
