@@ -42,19 +42,30 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         for (const wageRow of wagesForSoc) {
             const areaCode = wageRow.Area || wageRow.AREA_CODE;
 
+            // Check if the wage is already an annual figure via "Label" column, or if the numbers are inherently large
+            const isAnnual = (wageRow.Label && wageRow.Label.toLowerCase().includes('annual')) ||
+                (wageRow.Level_1_Annual || wageRow.LEVEL_1_ANNUAL);
+
             const countiesInArea = geoData.filter((g: any) => (g.Area || g.AREA_CODE) === areaCode);
 
             const parseWage = (val: string) => {
+                if (!val) return 0;
                 const num = parseFloat(val.replace(/[$,]/g, ''));
-                return isNaN(num) ? 0 : Math.round(num * 2080);
+                if (isNaN(num)) return 0;
+                // If it's already an annual wage, don't multiply. If it's hourly, convert to annual.
+                // Fallback: If no label is present but the number is huge (>1000), assume it's annual to be safe.
+                if (isAnnual || num > 1000) {
+                    return Math.round(num);
+                }
+                return Math.round(num * 2080);
             };
 
             const levels = {
-                level1: parseWage(wageRow.Level1 || wageRow.Level_1_Hourly || wageRow.LEVEL_1_HOURLY || '0'),
-                level2: parseWage(wageRow.Level2 || wageRow.Level_2_Hourly || wageRow.LEVEL_2_HOURLY || '0'),
-                level3: parseWage(wageRow.Level3 || wageRow.Level_3_Hourly || wageRow.LEVEL_3_HOURLY || '0'),
-                level4: parseWage(wageRow.Level4 || wageRow.Level_4_Hourly || wageRow.LEVEL_4_HOURLY || '0'),
-                average: parseWage(wageRow.Average || wageRow.Mean_Hourly || wageRow.MEAN_HOURLY || '0'),
+                level1: parseWage(wageRow.Level1 || wageRow.Level_1_Hourly || wageRow.LEVEL_1_HOURLY || wageRow.Level_1_Annual || wageRow.LEVEL_1_ANNUAL || '0'),
+                level2: parseWage(wageRow.Level2 || wageRow.Level_2_Hourly || wageRow.LEVEL_2_HOURLY || wageRow.Level_2_Annual || wageRow.LEVEL_2_ANNUAL || '0'),
+                level3: parseWage(wageRow.Level3 || wageRow.Level_3_Hourly || wageRow.LEVEL_3_HOURLY || wageRow.Level_3_Annual || wageRow.LEVEL_3_ANNUAL || '0'),
+                level4: parseWage(wageRow.Level4 || wageRow.Level_4_Hourly || wageRow.LEVEL_4_HOURLY || wageRow.Level_4_Annual || wageRow.LEVEL_4_ANNUAL || '0'),
+                average: parseWage(wageRow.Average || wageRow.Mean_Hourly || wageRow.MEAN_HOURLY || wageRow.Mean_Annual || wageRow.MEAN_ANNUAL || '0'),
             };
 
             const vals = Object.values(levels).filter(v => typeof v === 'number' && v > 0) as number[];
