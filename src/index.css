@@ -77,6 +77,11 @@ body {
   /* Ensure search dropdown stacking context overrides center panel */
 }
 
+.controls-collapsed {
+  gap: 0;
+  padding-bottom: 1rem;
+}
+
 .details-panel {
   top: 1.5rem;
   right: 1.5rem;
@@ -92,6 +97,10 @@ body {
     left: 1rem;
     right: 1rem;
     width: auto;
+  }
+
+  .controls-collapsed {
+    padding: 0.75rem 1rem;
   }
 
   .details-panel {
@@ -634,5 +643,10 @@ label {
   .panel-open .maplibregl-ctrl-bottom-right {
     transform: translateY(-52vh) !important;
     /* Slide the scale above the 50vh bottom panel */
+  }
+
+  /* Safely push the empty state tooltip down on mobile so it never overlaps the search panel */
+  .empty-state-panel {
+    top: 65%;
   }
 }
