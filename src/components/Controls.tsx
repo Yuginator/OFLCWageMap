@@ -64,7 +64,7 @@ const Controls: React.FC<ControlsProps> = ({
 
     return (
         <div className={cn("overlay-panel controls-panel", isCollapsed && "controls-collapsed")}>
-            <div className="flex items-center justify-between" style={{ marginBottom: isCollapsed ? 0 : '0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: isCollapsed ? 0 : '0.5rem' }}>
                 <h1 className="text-xl font-bold tracking-tight" style={{ margin: 0 }}>OFLC Wage Search</h1>
                 <button
                     className="text-muted hover:text-white transition-colors"
