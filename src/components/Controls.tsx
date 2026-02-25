@@ -70,7 +70,7 @@ const Controls: React.FC<ControlsProps> = ({
                     className="text-muted hover:text-white transition-colors"
                     onClick={() => setIsCollapsed(!isCollapsed)}
                     title={isCollapsed ? "Expand panel" : "Collapse panel"}
-                    style={{ background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', padding: '0.25rem' }}
+                    style={{ color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', padding: '0.25rem' }}
                 >
                     {isCollapsed ? <ChevronDown size={18} /> : <ChevronUp size={18} />}
                 </button>
