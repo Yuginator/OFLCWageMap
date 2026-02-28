@@ -49,11 +49,6 @@ const MapView: React.FC<MapProps> = ({ wageData, activeLevel, selectedFips, onFi
                         type: 'geojson',
                         data: '/geo/us-counties.json', // We'll need a GeoJSON version or TopoJSON-to-GeoJSON convert
                         generateId: true
-                    },
-                    'states': {
-                        type: 'geojson',
-                        data: '/geo/us-states.json',
-                        generateId: true
                     }
                 },
                 layers: [
@@ -77,16 +72,7 @@ const MapView: React.FC<MapProps> = ({ wageData, activeLevel, selectedFips, onFi
                         type: 'line',
                         source: 'counties',
                         paint: {
-                            'line-color': 'rgba(255,255,255,0.05)',
-                        }
-                    },
-                    {
-                        id: 'states-outline',
-                        type: 'line',
-                        source: 'states',
-                        paint: {
-                            'line-color': '#475569',
-                            'line-width': 1.5
+                            'line-color': 'rgba(255,255,255,0.08)',
                         }
                     },
                     {
@@ -368,8 +354,7 @@ const MapView: React.FC<MapProps> = ({ wageData, activeLevel, selectedFips, onFi
         const m = map.current;
         if (m.getStyle()) {
             m.setPaintProperty('background', 'background-color', theme === 'dark' ? '#000000' : '#e2e8f0');
-            m.setPaintProperty('counties-outline', 'line-color', theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.4)');
-            m.setPaintProperty('states-outline', 'line-color', theme === 'dark' ? '#475569' : '#94a3b8');
+            m.setPaintProperty('counties-outline', 'line-color', theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.4)');
             m.setPaintProperty('counties-labels', 'text-color', theme === 'dark' ? '#ffffff' : '#0f172a');
             m.setPaintProperty('counties-labels', 'text-halo-color', theme === 'dark' ? 'rgba(15, 23, 42, 0.8)' : 'rgba(255, 255, 255, 0.8)');
         }
