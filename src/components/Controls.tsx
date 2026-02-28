@@ -21,6 +21,7 @@ interface ControlsProps {
     hasActiveSelection: boolean;
     theme: 'dark' | 'light';
     onThemeToggle: () => void;
+    scale?: { min: number; max: number };
 }
 
 const Controls: React.FC<ControlsProps> = ({
@@ -36,6 +37,7 @@ const Controls: React.FC<ControlsProps> = ({
     hasActiveSelection,
     theme,
     onThemeToggle,
+    scale,
 }) => {
     const [search, setSearch] = useState('');
     const [isOpen, setIsOpen] = useState(false);
@@ -204,6 +206,21 @@ const Controls: React.FC<ControlsProps> = ({
                                 </button>
                             ))}
                         </div>
+                        {scale && (
+                            <div style={{ marginTop: '0.5rem', padding: '0 4px' }}>
+                                <div className="legend-bar">
+                                    <div className="q1"></div>
+                                    <div className="q2"></div>
+                                    <div className="q3"></div>
+                                    <div className="q4"></div>
+                                    <div className="q5"></div>
+                                </div>
+                                <div className="legend-labels" style={{ fontSize: '0.75rem' }}>
+                                    <span>${scale.min.toLocaleString()}</span>
+                                    <span>${scale.max.toLocaleString()}</span>
+                                </div>
+                            </div>
+                        )}
                     </div>
                     <div className="input-group">
                         <label>Compare Personal Salary (Optional)</label>

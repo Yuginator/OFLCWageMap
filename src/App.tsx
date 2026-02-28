@@ -97,9 +97,10 @@ const App: React.FC = () => {
                 onWageLevelChange={setWageLevel}
                 personalSalary={personalSalary}
                 onPersonalSalaryChange={setPersonalSalary}
-                hasActiveSelection={!!selectedFips}
+                hasActiveSelection={activeCountyData ? true : false}
                 theme={theme}
-                onThemeToggle={() => setTheme(prev => prev === 'dark' ? 'light' : 'dark')}
+                onThemeToggle={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                scale={wageData?.scale}
             />
 
             <div className="map-container">
@@ -127,35 +128,10 @@ const App: React.FC = () => {
                     </div>
                 )}
 
-                {wageData && (
-                    <div className="legend">
-                        <div className="flex items-center justify-between mb-1" style={{ cursor: 'pointer' }} onClick={() => setLegendOpen(!legendOpen)}>
-                            <span className="font-semibold text-xs">Annual Wage Range</span>
-                            <button className="text-slate-400 hover:text-white" style={{ background: 'transparent', border: 'none', padding: 0 }}>
-                                {legendOpen ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
-                            </button>
-                        </div>
-                        {legendOpen && (
-                            <>
-                                <div className="legend-bar">
-                                    <div className="q1"></div>
-                                    <div className="q2"></div>
-                                    <div className="q3"></div>
-                                    <div className="q4"></div>
-                                    <div className="q5"></div>
-                                </div>
-                                <div className="legend-labels">
-                                    <span>${wageData.scale.min.toLocaleString()}</span>
-                                    <span>${wageData.scale.max.toLocaleString()}</span>
-                                </div>
-                            </>
-                        )}
-                    </div>
-                )}
+            </div>
 
-                <div className="footer-note">
-                    Wages are defined by BLS statistical areas and may apply to multiple counties.
-                </div>
+            <div className="footer-note">
+                Wages are defined by BLS statistical areas and may apply to multiple counties.
             </div>
         </div>
     );

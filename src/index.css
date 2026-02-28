@@ -164,16 +164,20 @@ label {
 
 .search-input {
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   background: transparent;
   border: 1px solid var(--border);
   color: var(--text);
-  padding: 0.6rem 2.5rem 0.6rem 0.75rem;
+  padding: 0.6rem 0.75rem;
   border-radius: var(--radius);
   font-family: var(--font-mono);
   font-size: 0.875rem;
   outline: none;
   transition: all 0.2s;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) inset;
+  cursor: pointer;
 }
 
 [data-theme="light"] .search-input {
@@ -385,11 +389,13 @@ label {
 
 .legend-bar {
   display: flex;
-  height: 8px;
-  width: 200px;
-  border-radius: 4px;
+  height: 6px;
+  width: 100%;
+  border-radius: 3px;
   overflow: hidden;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) inset;
+  margin-top: 0.5rem;
+  margin-bottom: 0.25rem;
 }
 
 .legend-bar>div {
