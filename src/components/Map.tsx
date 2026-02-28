@@ -74,6 +74,24 @@ const MapView: React.FC<MapProps> = ({ wageData, activeLevel, selectedFips, onFi
                         paint: {
                             'line-color': 'rgba(255,255,255,0.08)',
                         }
+                    },
+                    {
+                        id: 'counties-labels',
+                        type: 'symbol',
+                        source: 'counties',
+                        minzoom: 5,
+                        layout: {
+                            'text-field': '',
+                            'text-font': ['Open Sans Regular'], // Use exactly what the demotiles glyphs server provides
+                            'text-size': 12,
+                            'text-max-width': 8,
+                            'text-overlap': 'never', // Prevent dense cluster overlapping
+                        },
+                        paint: {
+                            'text-color': '#ffffff',
+                            'text-halo-color': 'rgba(15, 23, 42, 0.8)', // slate-900 halo for readability against dark blue
+                            'text-halo-width': 1.5,
+                        }
                     }
                 ]
             },
@@ -334,9 +352,14 @@ const MapView: React.FC<MapProps> = ({ wageData, activeLevel, selectedFips, onFi
     useEffect(() => {
         if (!map.current) return;
         const m = map.current;
-        if (m.getStyle()) {
+        if (m && m.getStyle()) {
             m.setPaintProperty('background', 'background-color', theme === 'dark' ? '#000000' : '#e2e8f0');
             m.setPaintProperty('counties-outline', 'line-color', theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.4)');
+
+            if (m.getLayer('counties-labels')) {
+                m.setPaintProperty('counties-labels', 'text-color', theme === 'dark' ? '#ffffff' : '#0f172a');
+                m.setPaintProperty('counties-labels', 'text-halo-color', theme === 'dark' ? 'rgba(15, 23, 42, 0.8)' : 'rgba(255, 255, 255, 0.8)');
+            }
         }
     }, [theme]);
 
@@ -420,6 +443,40 @@ const MapView: React.FC<MapProps> = ({ wageData, activeLevel, selectedFips, onFi
 
         if (map.current.getLayer('counties-fill')) {
             map.current.setPaintProperty('counties-fill', 'fill-color', colorExpression);
+        }
+
+        // Generate the text layout match expression mapping FIPS -> formatted text (e.g. "$105k")
+        // We only show labels for valid, non-zero wages.
+        const formatWageText = (wage: number) => {
+            if (wage >= 1000) {
+                return `$${Math.round(wage / 1000)}k`;
+            }
+            return `$${wage}`;
+        };
+
+        const textMatchExpr: any[] = ['match', fipsExpr];
+        for (const [fips, countyData] of Object.entries(data)) {
+            if (personalSalary && personalSalary > 0) {
+                if (countyData.level1 > 0) {
+                    let label = 'Fail';
+                    if (personalSalary >= countyData.level4) label = 'L4+';
+                    else if (personalSalary >= countyData.level3) label = 'L3';
+                    else if (personalSalary >= countyData.level2) label = 'L2';
+                    else if (personalSalary >= countyData.level1) label = 'L1';
+                    textMatchExpr.push(fips, label);
+                }
+            } else {
+                // @ts-ignore dynamic key access
+                const wage = countyData[activeLevel];
+                if (typeof wage === 'number' && wage > 0) {
+                    textMatchExpr.push(fips, formatWageText(wage));
+                }
+            }
+        }
+        textMatchExpr.push(''); // fallback empty string
+
+        if (map.current.getLayer('counties-labels')) {
+            map.current.setLayoutProperty('counties-labels', 'text-field', textMatchExpr);
         }
 
         // Highlight selected county
