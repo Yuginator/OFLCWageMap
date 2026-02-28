@@ -280,11 +280,22 @@ const MapView: React.FC<MapProps> = ({ wageData, activeLevel, selectedFips, onFi
         }
 
         const formatWage = (v: number) => `$${v.toLocaleString()}`;
-        // @ts-ignore dynamic key access
-        const activeWageNumeric = cData ? cData[activeLevel] : null;
-        const wageMetric = typeof activeWageNumeric === 'number' && activeWageNumeric > 0
-            ? formatWage(activeWageNumeric)
-            : '<span style="color: var(--text-muted); font-size: 14px; font-weight: normal;">No Data</span>';
+
+        const rowStyle = (levelKey: string) => {
+            const isActive = activeLevel === levelKey;
+            return `
+                display: flex;
+                justify-content: space-between;
+                padding: 4px 0;
+                font-size: 13px;
+                border-left: ${isActive ? '3px solid var(--primary)' : '0'};
+                padding-left: ${isActive ? '8px' : '0'};
+                background: ${isActive ? 'var(--bg-panel-hover)' : 'transparent'};
+                color: ${isActive ? 'var(--text)' : 'var(--text-muted)'};
+            `;
+        };
+
+        const valStyle = `font-family: var(--font-mono); color: var(--text); font-weight: 500;`;
 
         const tierBadge = userTier !== null ? `
             <div style="background: ${userTier === 0 ? 'rgba(239, 68, 68, 0.1)' : 'rgba(59, 130, 246, 0.1)'}; border: 1px solid ${userTier === 0 ? 'rgba(239, 68, 68, 0.2)' : 'rgba(59, 130, 246, 0.2)'}; border-radius: 6px; padding: 10px; margin-top: 14px;">
@@ -306,12 +317,41 @@ const MapView: React.FC<MapProps> = ({ wageData, activeLevel, selectedFips, onFi
                     ${meta?.soc_title}
                 </div>
                 
-                <div style="font-size: 10px; text-transform: uppercase; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; letter-spacing: 0.02em;">Prevailing Wage (${activeLevel.replace('level', 'Level ').replace('average', 'Average')})</div>
-                <div style="font-size: 20px; font-family: var(--font-mono); font-weight: 600; color: var(--text);">
-                    ${wageMetric}
-                </div>
+                ${cData && cData.level1 > 0 ? `
+                    <div style="margin-bottom: 12px; display: flex; flex-direction: column; gap: 2px;">
+                        <div style="${rowStyle('level1')}">
+                            <span>Level I</span>
+                            <span style="${valStyle}">${formatWage(cData.level1)}</span>
+                        </div>
+                        <div style="${rowStyle('level2')}">
+                            <span>Level II</span>
+                            <span style="${valStyle}">${formatWage(cData.level2)}</span>
+                        </div>
+                        <div style="${rowStyle('level3')}">
+                            <span>Level III</span>
+                            <span style="${valStyle}">${formatWage(cData.level3)}</span>
+                        </div>
+                        <div style="${rowStyle('level4')}">
+                            <span>Level IV</span>
+                            <span style="${valStyle}">${formatWage(cData.level4)}</span>
+                        </div>
+                        <div style="${rowStyle('average')} border-top: 1px solid var(--border); margin-top: 4px; padding-top: 6px;">
+                            <span style="color: var(--primary);">Average Annual Wage</span>
+                            <span style="${valStyle} color: var(--primary);">${formatWage(cData.average)}</span>
+                        </div>
+                    </div>
+                ` : `
+                    <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">No wage data available</div>
+                `}
                 
                 ${tierBadge}
+
+                <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 10px; color: var(--text-muted); line-height: 1.4;">
+                    <div>Wage Year: ${meta?.wage_year || '2025-2026'}</div>
+                    <div style="margin-bottom: 4px;">Source: ${meta?.source || 'U.S. DOL OFLC (FLAG wage data)'}</div>
+                    <div style="font-style: italic;">Note: Annual wages = hourly × 2080 (OFLC standard)</div>
+                    <a href="https://flag.dol.gov/wage-data/wage-data-downloads" target="_blank" style="color: var(--primary); text-decoration: none; display: inline-block; margin-top: 4px;">Visit DOL FLAG ↗</a>
+                </div>
             </div>
         `;
 
